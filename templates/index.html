@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title%}Code & Beyond {% endblock %}
+{% block content %}
+
+<section id="homepage">
+  <!-- Reading Progress -->
+  <div id="readingProgress"></div>
+
+  <!-- Hero Section -->
+<section class="hero text-center d-flex align-items-center justify-content-center">
+  <div class="text-dark">
+    <h1 style="color: rgb(34, 170, 238);">Welcome to EduGlobe</h1><br>
+    <p class="lead">Where curious minds meet knowledge, innovation, and fresh perspectives.</p>
+    <a href="{% url 'blogs' %}" class="btn btn-info btn-lg mt-3">Learn & Explore</a>
+  </div>
+</section>
+
+
+  <!-- Trending Blogs -->
+  <section class="container py-5">
+    <h2 class="text-info text-center mb-4">Trending Blogs</h2>
+    <div class="row g-4">
+      {% for blog in trending_blogs %}
+      <div class="col-md-4 col-sm-6">
+        <div class="card h-100 shadow-sm">
+          <img src="{{ blog.blog_image.url }}" class="card-img-top" alt="{{ blog.title }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ blog.title }}</h5>
+            <p class="card-text">{{ blog.short_description }}</p>
+            <a href="{% url 'blog-detail' blog.id %}" class="btn btn-info">Read More</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Top Authors -->
+  <!-- {{ top_author_blogs|json_script:"top-author-data" }}
+  <section class="py-5">
+    <div class="container text-center">
+      <h2 class="text-warning mb-4">🔥 Top Author Blogs</h2>
+      <div id="topAuthorGrid" class="row g-4 justify-content-center"></div>
+      <p id="noTopAuthor" style="display:none;">No top author blogs found.</p>
+    </div>
+  </section> -->
+
+
+  <!-- Categories (Last Section) -->
+  <!-- {{ category|json_script:"categories-data" }}
+  <section class="categories py-5 bg-secondary bg-opacity-10">
+    <div class="container text-center">
+      <h2 class="text-warning mb-4">Categories</h2>
+      <div class="d-flex flex-wrap justify-content-center gap-2" id="categoryList"></div>
+    </div>
+  </section> -->
+
+  <!-- Newsletter -->
+  <section class="py-5 bg-dark text-white text-center">
+    <h3 class="mb-3">Subscribe for Insights</h3>
+    <form method="post"  class="d-flex justify-content-center gap-2 flex-wrap" id="newsletterForm">
+      {% csrf_token %}
+      <input type="email" name="email" class="form-control w-auto" placeholder="Your email" required>
+      <button type="submit" class="btn btn-info">Subscribe</button>
+    </form>
+  </section>
+
+</section>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title%}Trending{% endblock %}
+{% block content %}
+
+  <!-- Trending Section -->
+  <section class="container py-5">
+  <h2 class="text-info text-center mb-4">Trending Blogs</h2>
+  <div class="row g-4">
+    {% for blog in trending_blogs %}
+    <div class="col-md-4 col-sm-6">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ blog.blog_image.url }}" class="card-img-top" alt="{{ blog.title }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ blog.title }}</h5>
+          <p class="card-text">{{ blog.short_description }}</p>
+          <a href="{% url 'blog-detail' blog.id %}" class="btn btn-info">Read More</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

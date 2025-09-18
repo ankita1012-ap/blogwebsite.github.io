@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% block title%} {{blog_detail.title}} {% endblock %}
+{% block content %}
+
+<!-- Breadcrumb -->
+<!-- <div class="container mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb bg-light p-2 rounded">
+      <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+      <li class="breadcrumb-item"><a href="categories.html">Technology</a></li>
+      <li class="breadcrumb-item"><a href="category-technology.html">AI & Innovation</a></li>
+      <li class="breadcrumb-item active" aria-current="page">AI Innovations 2025</li>
+    </ol>
+  </nav>
+</div> -->
+
+<!-- Blog Content Section -->
+<section class="container py-4">
+  <div class="row">
+    <!-- Main Blog Content -->
+    <div class="col-lg-8 blog-content">
+      <h1 class="fw-bold mb-3">{{blog_detail.title}}</h1>
+      <div class="d-flex align-items-center mb-3 text-white">
+        <img src="https://i.pravatar.cc/50" class="rounded-circle me-2" alt="Author">
+        <div>
+          <span><b>{{blog_detail.author}}</b> | {{blog_detail.created_at.date}}</span><br>
+          <small>⏱ 6 min read {{blog_detail.id}}| 👁 {{blog_detail.views}} views</small>
+        </div>
+      </div>
+
+      <p>{{blog_detail.short_description}}</p>
+      <div class="hero-blog mb-4">
+        <img src="{{blog_detail.blog_image.url}}" class="img-fluid rounded" alt="AI Innovations">
+      </div>
+      <p>{{blog_detail.blog_body}}</p>
+    </div>
+
+    <!-- Sidebar: Related Blogs -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-dark">
+          Related Blogs
+        </div>
+        <ul class="list-group list-group-flush" id="relatedBlogs">
+          <li class="list-group-item"><a href="blog-detail.html">Top AI Tools You Should Know</a></li>
+          <li class="list-group-item"><a href="blog-detail.html">Machine Learning Basics</a></li>
+          <li class="list-group-item"><a href="blog-detail.html">Future of Robotics</a></li>
+          <li class="list-group-item"><a href="blog-detail.html">Blockchain & Security</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comment Section -->
+<section class="container mt-5">
+  <h4 class="mb-3">💬 Comments</h4>
+  <div id="commentsContainer" class="mb-3">
+    {% for comment in comments %}
+    <div class="comment mb-3 border-top p-3 rounded">
+      <strong>{{ comment.user.username }}</strong>
+      <small>{{ comment.created_at|date:"M d, Y H:i" }}</small>
+      <p>{{ comment.content }}</p>
+
+      <div class="comment-actions">
+        <button onclick="replyComment(this, '{{ comment.id }}')">↩ Reply</button>
+        {% if comment.top_replies %}
+        <button onclick="toggleReplies(this)">👁 Show Replies</button>
+        {% endif %}
+      </div>
+
+      <div class="replies ms-4" style="display:none;">
+        {% for reply in comment.top_replies %}
+        <div class="comment mb-2 border-top p-2 rounded">
+          <strong>{{ reply.user.username }}</strong>
+          <small>{{ reply.created_at|date:"M d, Y H:i" }}</small>
+          <p>{{ reply.content }}</p>
+
+          <div class="comment-actions">
+            <button onclick="replyComment(this, '{{ comment.id }}', '{{ reply.id }}')">↩ Reply</button>
+          </div>
+
+          <div class="sub-replies ms-4" style="display:none;">
+            {% for sub_reply in reply.sub_replies_list %}
+            <div class="comment mb-2 border-top p-2 rounded">
+              <strong>{{ sub_reply.user.username }}</strong>
+              <small>{{ sub_reply.created_at|date:"M d, Y H:i" }}</small>
+              <p>{{ sub_reply.content }}</p>
+              <div class="comment-actions">
+                <button onclick="replyComment(this, '{{ comment.id }}', '{{ sub_reply.id }}')">↩ Reply</button>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <hr>
+
+  <!-- Comment Input -->
+  {% if user.is_authenticated%}
+  <div class="mb-3 input-group mt-2">
+    <input type="text" id="commentInput" class="form-control" placeholder="Write a comment...">
+    <button class="btn btn-primary" onclick="submitComment()">Post Comment</button>
+  </div>
+  {% else %}
+  <div class="input-group">
+    <a href="{% url 'auth' %}" class="btn btn-secondary">Login to comment</a>
+  </div>
+  {% endif %}
+</section>
+
+
+
+
+<script>
+  // Show/hide replies
+  function toggleReplies(button) {
+    const container = button.closest(".comment").querySelector(".replies, .sub-replies");
+    if (container.style.display === "none") {
+      container.style.display = "block";
+      button.innerText = button.innerText.replace("Show", "Hide");
+    } else {
+      container.style.display = "none";
+      button.innerText = button.innerText.replace("Hide", "Show");
+    }
+  }
+
+  // Show reply input box
+  function replyComment(button, commentId, parentId = null) {
+    if (button.parentElement.querySelector(".reply-box")) return;
+
+    const replyBox = document.createElement("div");
+    replyBox.classList.add("reply-box", "mt-2");
+    replyBox.innerHTML = `
+    <input type="text" placeholder="Reply..." class="form-control mb-2">
+    <button class="btn btn-sm btn-success" onclick="postReply(this, ${commentId}, ${parentId})">Post Reply</button>
+    <button class="btn btn-sm btn-secondary" onclick="cancelReply(this)">Cancel</button>
+  `;
+    button.parentElement.appendChild(replyBox);
+  }
+
+  // Cancel reply box
+  function cancelReply(button) {
+    button.parentElement.remove();
+  }
+
+  // Post reply via fetch
+  function postReply(button, commentId, parentId = null) {
+    const input = button.parentElement.querySelector("input");
+    const text = input.value.trim();
+    if (!text) return alert("Reply cannot be empty.");
+
+    fetch(`/add_reply/${commentId}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: JSON.stringify({ content: text, parent_id: parentId })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          let container;
+          if (parentId) {
+            // append under parent reply
+            container = button.closest(".comment").querySelector(".sub-replies");
+            if (!container) {
+              container = document.createElement("div");
+              container.classList.add("sub-replies", "ms-4");
+              button.closest(".comment").appendChild(container);
+            }
+          } else {
+            // append under comment
+            container = button.closest(".comment").querySelector(".replies");
+          }
+
+          const newReply = document.createElement("div");
+          newReply.classList.add("comment", "mb-2", "border-top", "p-2", "rounded");
+          newReply.innerHTML = `<strong>${data.user}</strong> <small>${data.created_at}</small><p>${data.content}</p>
+                            <div class="comment-actions">
+                              <button onclick="replyComment(this, ${commentId}, ${data.reply_id})">↩ Reply</button>
+                            </div>`;
+          container.appendChild(newReply);
+          container.style.display = "block"; // show container
+          button.parentElement.remove(); // remove reply box
+        } else {
+          alert(data.error);
+        }
+      });
+  }
+
+</script>
+{% endblock %}

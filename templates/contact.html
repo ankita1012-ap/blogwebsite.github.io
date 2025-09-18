@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title%}Contact{% endblock %}
+{% block content %}
+<section id="contactpage">
+    <section class="contact-section container py-5">
+
+        <h1 class="mb-4 text-center fw-bold text-info">Contact Us</h1>
+
+        <div class="row">
+            <!-- Contact Form -->
+            <div class="col-lg-6 mb-4">
+    <form action="https://api.web3forms.com/submit" method="POST" class="shadow p-4 rounded contact-form">
+        <input type="hidden" name="access_key" value="420140b7-151b-4380-9dc5-1974e13632d5">
+
+        <h2 class="mb-4 text-center" style="color: #1dd5db; font-weight: 600;">Get in Touch</h2>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" id="email" placeholder="Your Email" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <input type="text" name="subject" class="form-control" id="subject" placeholder="Subject" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="message" class="form-label">Message</label>
+            <textarea class="form-control" name="message" id="message" rows="5" placeholder="Write your message..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-info w-100">Send Message</button>
+    </form>
+</div>
+
+           
+</section>
+{% endblock %}

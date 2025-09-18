@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title%}Categories{% endblock %}
+{% block content %}
+
+
+<!-- Categories Section -->
+<section class="container py-5">
+  <h2 class="text-info text-center mb-4">Categories</h2>
+  <div class="row g-4">
+    {% for i in category %}
+    <div class="col-md-4 col-sm-6">
+      <div class="card h-100 shadow-sm">
+        <img src="{{i.category_image.url}}"
+          class="card-img-top" alt="Technology">
+        <div class="card-body text-center">
+          <h5 class="card-title">{{i.category_name}}</h5>
+          <p class="card-text">
+            {{i.category_text}}
+          </p>
+          <a href="{% url 'category-blog' i.category_name %}" class="btn btn-info">View Blogs</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title%}Blogs{% endblock %}
+{% block content %}
+<!-- {{blogs}} -->
+<!-- Page Header -->
+<header class="page-header text-center py-5">
+  <h1 class="display-5 fw-bold">Explore All Blogs</h1>
+  <p class="text-info">Stay updated with the latest posts and trending content</p>
+</header>
+
+<!-- Blog Listing Section -->
+<div class="container py-5">
+    {{ blogs|json_script:"blogs-data" }}
+<!-- {{blogs.0}} -->
+    <!-- {{blogs}} -->
+      <div class="row g-4" id="allBlog"></div>
+      <div class="text-center mt-4">
+        <button id="loadMoreBtn" class="btn btn-outline-info">Load More</button>
+      </div>
+  </div>
+<script>
+   // Blogs data
+    let blogs = JSON.parse(document.getElementById("blogs-data").textContent);
+    let allBlog = document.getElementById("allBlog");
+    // allBlog.innerHTML = `${blogs[1].title}`;
+    let loadIndex = 0, loadMore = 3;
+
+    function loadBlogs() {
+      for (let i = loadIndex; i < loadIndex + loadMore && i < blogs.length; i++) {
+        // allBlog.innerHTML = `${blogs[i].title}`;
+        let createdAt = new Date(blogs[i].created_date);
+        let formattedDate = createdAt.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric"
+        });
+
+
+        let card = document.createElement("div");
+        card.className = "col-md-4 mb-4";
+        card.innerHTML = `<div class="blog-card">
+          <img src="/media/${blogs[i].blog_image}" class="blog-img" alt="Blog Image">
+          <div class="blog-content">
+            <h5 class="blog-title">${blogs[i].title}</h5>
+            <p class="blog-snippet">AI is not the future, it’s the present. Let’s explore how it’s shaping industries...
+            </p>
+            <div class="blog-meta">
+              <span>👤 ${blogs[i].author_name}</span>
+              <span>📅 ${formattedDate}</span>
+              <span>👁 ${blogs[i].views}</span>
+            </div>
+            <a href="/blog-detail/${blogs[i].id}/" class="btn btn-read">Read More</a>
+          </div>
+        </div>`;
+        allBlog.appendChild(card);
+      }
+      loadIndex += loadMore;
+      if (loadIndex >= blogs.length) {
+        document.getElementById("loadMoreBtn").style.display = "none";
+      }
+    }
+    loadBlogs();
+    document.getElementById("loadMoreBtn").addEventListener("click", loadBlogs);
+
+</script>
+  
+{% endblock %}
